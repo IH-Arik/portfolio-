@@ -1,0 +1,32 @@
+import { ResearchPaper } from '../lib/types';
+
+export const researchPapers: ResearchPaper[] = [
+  {
+    slug: 'thyroid-ensemble-classifier',
+    title: 'A Hybrid Machine Learning Ensemble Framework for High-Accuracy Thyroid Disorder Classification',
+    authors: ['Md. Hossain (Arik)', 'VDAL Lab Group'],
+    venue: 'Journal of Medical Systems / Bio-Computing Preprint',
+    date: 'Dec 2025',
+    researchGateUrl: 'https://www.researchgate.net/profile/Md-Hossain-1936',
+    abstract: 'Early classification of thyroid disorders is critical to prevent metabolic abnormalities and guide therapeutic treatments. This paper proposes a hybrid ensemble framework combining gradient-boosted trees, random forests, and deep feed-forward neural networks optimized via genetic feature selection to classify clinical thyroid markers, achieving state-of-the-art diagnostic accuracy on patient record partitions.',
+    keyFindings: [
+      'Achieved a peak diagnostic accuracy of 99.4% on validation partitions, outperforming individual model components.',
+      'Reduced the feature dimension requirement by 40% through Genetic Algorithm (GA) feature pruning without compromising metrics.',
+      'Maintained diagnostic explainability via SHAP (SHapley Additive exPlanations) attribution vectors to guide clinical reviews.'
+    ]
+  },
+  {
+    slug: 'rdws-eksd-kidney-stone',
+    title: 'RDWS-EKSD: Robust Dual-Wavelet Segmentation and Ensemble Kernel-Support Vector Diagnostics for High-Precision Kidney Stone Detection',
+    authors: ['Md. Hossain (Arik)', 'VDAL Research Group', 'IEEE Collaborators'],
+    venue: 'IEEE International Conference on Image Processing & Bioinformatics',
+    date: 'IEEE (2025)',
+    researchGateUrl: 'https://www.researchgate.net/profile/Md-Hossain-1936',
+    abstract: 'Automated identification of nephrolithiasis (kidney stones) in ultrasound images is challenging due to speckle noise and low-contrast borders. This work introduces a dual-wavelet decomposition framework to segment renal cavities and extracts high-dimensional texture descriptors, followed by classifier diagnostic grouping to automate clinical detection.',
+    keyFindings: [
+      'Introduced a Dual-Wavelet filter that suppresses 82% of ultrasound speckle noise while preserving boundary sharpness.',
+      'Achieved 97.8% segmentation intersection-over-union (IoU) for calcified kidney stone structures.',
+      'Validated across clinical datasets containing 420+ ultrasound frames with expert annotations, proving robustness.'
+    ]
+  }
+];

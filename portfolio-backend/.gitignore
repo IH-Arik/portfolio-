@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+app/data/vector_store/*.faiss
+app/data/vector_store/*.json
+app/data/*.db

@@ -1,0 +1,55 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+@theme {
+  --color-basalt: var(--basalt);
+  --color-fog: var(--fog);
+  --color-slate-grid: var(--slate-grid);
+  --color-signal-amber: var(--signal-amber);
+  --color-hazard-coral: var(--hazard-coral);
+  --color-moss: var(--moss);
+
+  --font-sans: var(--font-inter), sans-serif;
+  --font-display: var(--font-space-grotesk), sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), monospace;
+}
+
+html {
+  /* Scales all rem-based Tailwind sizing by 1.25x without touching the
+     zoom/transform pipeline — keeps clientX/clientY and
+     getBoundingClientRect() in sync with actual layout, so cursor-tracking
+     effects (trail, heatmap, magnetic rail) stay aligned with the pointer. */
+  font-size: 125%;
+}
+
+body {
+  background-color: var(--basalt);
+  color: var(--fog);
+  font-family: var(--font-inter), sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Custom global focus styling */
+*:focus-visible {
+  outline: 2px solid var(--signal-amber);
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar matching basalt and slate-grid */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--basalt);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--slate-grid);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--signal-amber);
+}

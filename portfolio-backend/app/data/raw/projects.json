@@ -1,0 +1,65 @@
+[
+  {
+    "title": "Building Damage Assessment (Thesis Flagship)",
+    "description": "Applied Deep Learning comparing pre- and post-disaster satellite imagery via a custom Siamese Network architecture to automatically identify destroyed structures.",
+    "before": "Disaster assessment relied on manual, slow, and high-risk field inspections or manual tagging of high-resolution satellite frames, delaying response times by days or weeks.",
+    "after": "An end-to-end Siamese CNN compares dual-temporal geospatial imagery in seconds, drawing pixel-accurate red hazard polygons over destroyed structures and green zones over intact buildings.",
+    "role": "Lead Applied DL Researcher",
+    "tags": ["PyTorch", "Siamese Networks", "GDAL/Geospatial", "ResNet-50", "Computer Vision"],
+    "slug": "building-damage-assessment"
+  },
+  {
+    "title": "Mabdel AI",
+    "description": "An AI-powered SaaS platform optimizing operational workflows and providing decision intelligence for small-to-medium enterprise management.",
+    "before": "Enterprises managed core datasets across disjointed spreadsheets and manual logs, leading to slow analytical loops and a complete lack of predictive operational foresight.",
+    "after": "Deployed a centralized Next.js + FastAPI dashboard offering live telemetry ingestion, forecasting modules, and instant business metric generation via automated pipelines.",
+    "role": "Full Stack SaaS Engineer",
+    "tags": ["React", "FastAPI", "PostgreSQL", "Docker", "Time Series Forecasting"],
+    "slug": "mabdel-ai"
+  },
+  {
+    "title": "Mon5majeur",
+    "description": "A sports-analytics platform for basketball enthusiasts, enabling player draft simulations, metrics tracking, and performance visualizations.",
+    "before": "Basketball coaches and amateur scouts spent hours reading dry statistic sheets, lacking a visual tool to simulate matchups or track real-time player distributions.",
+    "after": "Designed a React Native + Next.js web application utilizing dynamic radars, radar charts, and comparison layouts to instantly benchmark and simulate player compositions.",
+    "role": "Lead Frontend Architect",
+    "tags": ["Next.js", "React Native", "ChartJS/Recharts", "Tailwind CSS"],
+    "slug": "mon5majeur"
+  },
+  {
+    "title": "MyFutureAbroad",
+    "description": "An AI-powered academic and visa matching platform helping students evaluate university opportunities and documentation validity.",
+    "before": "Aspiring students had to navigate hundreds of university catalogs manually and submit visa documents with high margins of checklist errors, leading to frequent rejections.",
+    "after": "An intelligent portal containing a lightweight recommendation engine that compares academic profiles and checks uploaded PDFs against country-specific visa rule maps.",
+    "role": "Full Stack Engineer",
+    "tags": ["FastAPI", "React", "PDF Parsing", "Recommendation Engine", "SQLAlchemy"],
+    "slug": "myfutureabroad"
+  },
+  {
+    "title": "PPE & Hazard Detection",
+    "description": "Real-time computer vision system detecting personal protective equipment (helmets, vests) in industrial construction sites using YOLO.",
+    "before": "Safety inspections relied entirely on human guards monitoring multiple CCTV streams, resulting in missed violations and delayed hazard alerts.",
+    "after": "Deployed a YOLOv8 custom-trained detector on edge devices that triggers instant alert banners and writes telemetry logs whenever a PPE violation is detected.",
+    "role": "Computer Vision Engineer",
+    "tags": ["YOLOv8", "PyTorch", "OpenCV", "FastAPI", "Edge Deployment"],
+    "slug": "ppe-hazard-detection"
+  },
+  {
+    "title": "Brain Tumor Classification RAG",
+    "description": "Explainable AI diagnostic tool combining Brain Tumor MRI Classification (CNN) with a Retrieval-Augmented Generation (RAG) assistant for clinical notes.",
+    "before": "MRI classifiers output abstract probability scores (e.g., 98.4% Glioma) without medical explanation, making it difficult for clinical teams to verify the diagnostic rationale.",
+    "after": "Integrated a PyTorch DenseNet MRI classifier with an LLM RAG engine that queries medical databases to output natural-language clinical reports alongside classification indices.",
+    "role": "Applied ML Researcher",
+    "tags": ["DenseNet", "PyTorch", "RAG / LangChain", "ChromaDB", "Explainable AI"],
+    "slug": "brain-tumor-rag"
+  },
+  {
+    "title": "Product AI Agent",
+    "description": "Autonomous AI agent system designed to browse product databases, analyze customer requirements, and generate custom sales sheets.",
+    "before": "Sales teams spent hours cross-referencing spreadsheet specs and writing tailored emails for prospective leads, limiting daily lead outreach.",
+    "after": "Deployed an LLM-agent framework equipped with database tools that parses natural-language prompts to query inventories and automatically draft precise, technical brochures.",
+    "role": "AI Engineer",
+    "tags": ["LangChain / LangGraph", "OpenAI API", "Python", "FastAPI", "Svelte"],
+    "slug": "product-ai-agent"
+  }
+]
