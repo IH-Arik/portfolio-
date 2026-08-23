@@ -7,6 +7,12 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# IndexFlatL2 always returns the k-nearest vector regardless of how far it
+# actually is, so an unrelated query still gets a "match". Empirically,
+# on-topic questions against this content score well under this distance;
+# off-topic ones score well above it (see README for calibration notes).
+MAX_RELEVANT_DISTANCE = 1.4
+
 class RAGService:
     def __init__(self):
         self.model = None
@@ -56,11 +62,14 @@ class RAGService:
 
         # Search top-1 nearest neighbor
         distances, indices = self.index.search(question_emb, k=1)
-        
-        best_idx = indices[0][0]
 
-        # FAISS returns -1 if no matches or invalid index
-        if best_idx == -1 or best_idx >= len(self.metadata):
+        best_idx = indices[0][0]
+        best_distance = distances[0][0]
+
+        # FAISS returns -1 if no matches or invalid index. It always returns
+        # the nearest vector otherwise, however unrelated the question is,
+        # so an explicit distance check is what actually filters bad matches.
+        if best_idx == -1 or best_idx >= len(self.metadata) or best_distance > MAX_RELEVANT_DISTANCE:
             return {
                 "answer": "I could not retrieve relevant matches from Arik's portfolio index.",
                 "sources": []

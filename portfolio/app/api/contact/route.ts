@@ -28,11 +28,11 @@ export async function POST(request: Request) {
       });
     }
 
-    // Forward to FastAPI backend (schema maps name, email, message)
+    // Forward to FastAPI backend
     const backendResponse = await fetch(`${BACKEND_URL}/api/v1/contact/submit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, message }),
+      body: JSON.stringify({ name, email, subject, message }),
     });
 
     if (!backendResponse.ok) {

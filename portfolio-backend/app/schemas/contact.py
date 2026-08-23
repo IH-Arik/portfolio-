@@ -5,6 +5,7 @@ from typing import Optional
 class ContactSubmission(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     email: str = Field(..., min_length=3, max_length=255)
+    subject: str = Field(default="", max_length=200)
     message: str = Field(..., min_length=1, max_length=5000)
     
     # Honeypot field for spam prevention
