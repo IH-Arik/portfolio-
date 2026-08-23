@@ -27,6 +27,7 @@ def submit_contact(
     db_contact = Contact(
         name=submission.name,
         email=submission.email,
+        subject=submission.subject,
         message=submission.message
     )
     db.add(db_contact)
@@ -37,6 +38,7 @@ def submit_contact(
     send_contact_email(
         name=submission.name,
         sender_email=submission.email,
+        subject=submission.subject,
         message=submission.message
     )
 
