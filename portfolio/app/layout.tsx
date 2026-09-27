@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import Link from "next/link";
-import { CursorTrail } from "@/components/effects/CursorTrail";
-import { SocialRail } from "@/components/layout/SocialRail";
+import { SITE } from "@/content/site";
+import { AskAboutMyWork } from "@/components/assistant/AskAboutMyWork";
 import "./globals.css";
 
 const inter = Inter({
@@ -24,11 +24,48 @@ const ibmPlexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
+const siteUrl = "https://arikhossain.dev"; // TODO(verify): confirm the production domain for canonical/OG URLs
+
 export const metadata: Metadata = {
-  title: "Md. Hossain (Arik) | AI/ML Developer & Researcher",
-  description: "Portfolio of Md. Hossain (Arik), specializing in Applied Deep Learning, Computer Vision, and Full-Stack SaaS Engineering. Member of the Visual Data Analysis Lab (VDAL).",
-  keywords: ["AI Research", "Deep Learning", "Satellite Imagery Analysis", "Geospatial Deep Learning", "Brain Tumor RAG", "FastAPI", "React Native"],
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: `${SITE.name} — ${SITE.title}`,
+    template: `%s — ${SITE.name}`,
+  },
+  description: SITE.summary,
+  keywords: [
+    "AI/ML Engineer",
+    "Machine Learning Researcher",
+    "Deep Learning",
+    "Computer Vision",
+    "FastAPI",
+    "Next.js",
+    "PyTorch",
+  ],
+  authors: [{ name: SITE.name }],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    title: `${SITE.name} — ${SITE.title}`,
+    description: SITE.summary,
+    siteName: SITE.name,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE.name} — ${SITE.title}`,
+    description: SITE.summary,
+  },
 };
+
+const navLinks = [
+  { href: "/#projects", label: "Projects" },
+  { href: "/research", label: "Research" },
+  { href: "/about", label: "About" },
+  { href: "/#contact", label: "Contact" },
+];
 
 export default function RootLayout({
   children,
@@ -41,70 +78,53 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-basalt text-fog font-sans selection:bg-signal-amber/30 selection:text-signal-amber">
-        <CursorTrail />
-        <SocialRail />
-        {/* Navigation Header */}
-        <header className="sticky top-0 z-50 w-full border-b border-slate-grid/30 bg-basalt/80 backdrop-blur-md">
-          <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-            {/* Logo and Status */}
-            <Link href="/" className="flex items-center space-x-3 group">
-              <span className="font-mono text-sm font-bold tracking-tight text-fog group-hover:text-signal-amber transition-colors">
-                IH_ARIK // APPLIED_AI
-              </span>
-              <span className="flex h-2.5 w-2.5 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-moss opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-moss"></span>
-              </span>
+        {/* Navigation header */}
+        <header className="sticky top-0 z-40 w-full border-b border-slate-grid/12 bg-basalt/90 backdrop-blur-md">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+            <Link href="/" className="font-display font-bold text-base text-fog hover:text-signal-amber transition-colors">
+              {SITE.name}
             </Link>
 
-            {/* Navigation Links */}
-            <nav className="flex items-center space-x-6 sm:space-x-8 font-mono text-xs">
-              <Link
-                href="/#projects"
-                className="text-slate-grid hover:text-signal-amber transition-colors"
-              >
-                [01_PROJECTS]
-              </Link>
-              <Link
-                href="/research"
-                className="text-slate-grid hover:text-signal-amber transition-colors"
-              >
-                [02_RESEARCH]
-              </Link>
-              <Link
-                href="/about"
-                className="text-slate-grid hover:text-signal-amber transition-colors"
-              >
-                [03_ABOUT]
-              </Link>
-              <Link
-                href="/#contact"
-                className="text-slate-grid hover:text-signal-amber transition-colors"
-              >
-                [04_CONTACT]
-              </Link>
+            <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-grid" aria-label="Primary">
+              {navLinks.map((link) => (
+                <Link key={link.label} href={link.href} className="hover:text-fog transition-colors">
+                  {link.label}
+                </Link>
+              ))}
             </nav>
+
+            <a
+              href="/cv.pdf"
+              download
+              className="text-sm font-medium bg-signal-amber text-basalt px-4 py-2 rounded-md hover:bg-signal-amber/90 transition-colors"
+            >
+              Download CV
+            </a>
           </div>
+
+          {/* Mobile nav */}
+          <nav
+            className="sm:hidden flex items-center gap-5 px-4 pb-3 text-sm text-slate-grid overflow-x-auto"
+            aria-label="Primary"
+          >
+            {navLinks.map((link) => (
+              <Link key={link.label} href={link.href} className="hover:text-fog transition-colors whitespace-nowrap">
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </header>
 
-        {/* Main Content Area */}
         <main className="flex-grow">{children}</main>
 
-        {/* Technical Footer */}
-        <footer className="w-full border-t border-slate-grid/20 bg-basalt py-8 text-slate-grid font-mono text-[10px]">
-          <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
-              <span>LOC: 23.8103° N, 90.4125° E</span>
-              <span className="text-slate-grid/40">|</span>
-              <span>NET: VDAL_LAB_NODE</span>
-              <span className="text-slate-grid/40">|</span>
-              <span className="flex items-center gap-1.5">
-                STATUS: <span className="text-moss">SYSTEM_ONLINE_STABLE</span>
-              </span>
-            </div>
-            <div className="text-center md:text-right">
-              <span>© {new Date().getFullYear()} Md. Hossain (Arik). ALL RIGHTS RESERVED.</span>
-            </div>
+        <AskAboutMyWork />
+
+        <footer className="w-full border-t border-slate-grid/12 py-8 text-slate-grid text-sm">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+            <span>© {new Date().getFullYear()} {SITE.name}. All rights reserved.</span>
+            <a href={`mailto:${SITE.email}`} className="hover:text-fog transition-colors">
+              {SITE.email}
+            </a>
           </div>
         </footer>
       </body>

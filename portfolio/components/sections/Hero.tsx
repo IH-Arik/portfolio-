@@ -1,107 +1,106 @@
 'use client';
 
-import React from 'react';
+import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
-import AssistantPanel from '../assistant/AssistantPanel';
-import { HeroHeatmap } from '../effects/HeroHeatmap';
-import { Terminal, Shield } from 'lucide-react';
+import { Mail } from 'lucide-react';
+import { SiGithub, SiResearchgate } from 'react-icons/si';
+import { TbBrandLinkedin } from 'react-icons/tb';
+import { SITE, projects, papers } from '../../content/site';
 
 export default function Hero() {
   const shouldReduceMotion = useReducedMotion();
 
-  // Animation variants
-  const containerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: shouldReduceMotion ? 0 : 0.15,
-      },
-    },
-  };
+  // 1. Papers metric: first-author published papers
+  const firstAuthorPublishedPapers = papers.filter(
+    (paper) => paper.status === 'published' && paper.authors[0] === SITE.citationName
+  );
+  const allIeee =
+    firstAuthorPublishedPapers.length > 0 &&
+    firstAuthorPublishedPapers.every((p) => p.venue.includes('IEEE'));
+  const paperLabel = `${allIeee ? 'IEEE ' : ''}paper${firstAuthorPublishedPapers.length === 1 ? '' : 's'} · first author`;
 
-  const itemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: shouldReduceMotion ? 0 : 15 
-    },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.5, ease: 'easeOut' as const }
-    },
-  };
+  // 2. Projects metric
+  const projectCount = projects.length;
+
+  // 3. Affiliation lab from SITE.affiliation
+  const labMatch = SITE.affiliation.match(/\(([^)]+)\)/);
+  const labName = labMatch ? labMatch[1] : SITE.affiliation.split(',')[0];
+  const affiliationLabel = `Researcher at ${labName}`;
+
+  const socialLinks = [
+    { name: 'GitHub', href: SITE.github, Icon: SiGithub },
+    { name: 'LinkedIn', href: SITE.linkedin, Icon: TbBrandLinkedin },
+    { name: 'ResearchGate', href: SITE.researchgate, Icon: SiResearchgate },
+    { name: 'Email', href: `mailto:${SITE.email}`, Icon: Mail },
+  ].filter((link) => Boolean(link.href));
 
   return (
-    <section id="hero-section" className="relative w-full py-10 md:py-16 border-b border-slate-grid/10 overflow-hidden">
-      <HeroHeatmap />
-      <div className="relative z-10 max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        
-        {/* Left Side: Headline & Bio info */}
-        <motion.div 
-          className="lg:col-span-6 flex flex-col justify-center"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {/* Lab Node Badge */}
-          <motion.div 
-            variants={itemVariants}
-            className="inline-flex items-center gap-2 border border-slate-grid/35 px-3 py-1 rounded-full w-fit mb-6 bg-slate-grid/5 font-mono text-[9px] text-slate-grid tracking-wider uppercase"
-          >
-            <Terminal className="w-3.5 h-3.5 text-signal-amber animate-pulse" />
-            NODE_ADDR: <span className="text-fog">VDAL_LAB_ACTIVE</span>
-          </motion.div>
-
-          {/* Large display headline */}
-          <motion.h1 
-            variants={itemVariants}
-            className="font-display font-bold text-3xl sm:text-4xl md:text-5xl text-fog leading-[1.1] tracking-tight uppercase"
-          >
-            Applied AI Research <br />
-            <span className="text-signal-amber">& Shipped SaaS</span> Systems.
-          </motion.h1>
-
-          {/* Intro copy */}
-          <motion.p 
-            variants={itemVariants}
-            className="text-slate-grid hover:text-fog/90 text-sm sm:text-base leading-relaxed mt-5 max-w-xl transition-colors duration-300"
-          >
-            I engineer full-stack SaaS interfaces (React Native, Next.js, FastAPI) and design neural architectures for geospatial and medical imaging. Currently conducting deep learning research at the{' '}
-            <span className="text-fog border-b border-slate-grid/40 pb-0.5 font-mono text-xs">
-              Visual Data Analysis Lab (VDAL)
-            </span>.
-          </motion.p>
-
-          {/* Technical Info Coordinates */}
-          <motion.div 
-            variants={itemVariants}
-            className="mt-8 grid grid-cols-2 gap-4 border-t border-slate-grid/25 pt-6 font-mono text-xs text-slate-grid"
-          >
-            <div className="flex flex-col gap-1 border-r border-slate-grid/10 pr-2">
-              <span className="text-[10px] text-slate-grid/65 uppercase tracking-wider">// CORE_RESEARCH</span>
-              <span className="text-fog font-medium">Bitemporal Change Models</span>
-              <span className="text-[10px] text-moss flex items-center gap-1">
-                <Shield className="w-2.5 h-2.5 text-moss" /> F1_LOCALIZATION: 91.4%
-              </span>
-            </div>
-            <div className="flex flex-col gap-1 pl-2">
-              <span className="text-[10px] text-slate-grid/65 uppercase tracking-wider">// SYSTEMS_BUILD</span>
-              <span className="text-fog font-medium">FastAPI + Async Python</span>
-              <span className="text-[10px] text-signal-amber">NEXTJS_RECON_CLIENT</span>
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* Right Side: Showcase Signature AI Assistant Component */}
-        <motion.div 
-          className="lg:col-span-6 w-full flex flex-col justify-center"
-          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 15 }}
+    <section id="hero-section" className="w-full py-20 md:py-28">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <motion.div
+          className="max-w-3xl flex flex-col items-start text-left"
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.35, ease: 'easeOut' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
         >
-          <AssistantPanel />
-        </motion.div>
+          <h1 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl text-fog leading-tight">
+            {SITE.citationName}
+            <span className="block sm:inline sm:ml-3 text-lg sm:text-2xl font-normal text-slate-grid font-sans">
+              ({SITE.nickname})
+            </span>
+          </h1>
+          <p className="mt-2 text-lg sm:text-xl text-signal-amber font-medium">{SITE.title}</p>
+          <p className="mt-5 text-base sm:text-lg text-slate-grid leading-relaxed max-w-xl">
+            {SITE.summary}
+          </p>
 
+          {/* Highlights strip computed from site.ts */}
+          <div className="mt-6 flex flex-wrap items-center gap-2 sm:gap-2.5">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-grid/15 bg-slate-grid/[0.03] px-3 py-1 text-xs sm:text-sm text-slate-grid">
+              <span className="font-semibold text-fog">{firstAuthorPublishedPapers.length}</span>
+              <span>{paperLabel}</span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-grid/15 bg-slate-grid/[0.03] px-3 py-1 text-xs sm:text-sm text-slate-grid">
+              <span className="font-semibold text-fog">{projectCount}</span>
+              <span>projects</span>
+            </div>
+            <div className="inline-flex items-center rounded-full border border-slate-grid/15 bg-slate-grid/[0.03] px-3 py-1 text-xs sm:text-sm text-slate-grid">
+              <span>{affiliationLabel}</span>
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <Link
+              href="/#projects"
+              className="bg-signal-amber text-basalt font-medium px-5 py-2.5 rounded-md hover:bg-signal-amber/90 transition-colors"
+            >
+              View projects
+            </Link>
+            <a
+              href="/cv.pdf"
+              download
+              className="border border-slate-grid/20 text-fog font-medium px-5 py-2.5 rounded-md hover:border-signal-amber/60 hover:text-signal-amber transition-colors"
+            >
+              Download CV
+            </a>
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+            {socialLinks.map(({ name, href, Icon }) => (
+              <a
+                key={name}
+                href={href}
+                target={href.startsWith('mailto:') ? undefined : '_blank'}
+                rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+                aria-label={name}
+                className="inline-flex items-center gap-2 text-sm text-slate-grid hover:text-signal-amber transition-colors"
+              >
+                <Icon className="w-4 h-4 flex-shrink-0" />
+                <span>{name}</span>
+              </a>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );

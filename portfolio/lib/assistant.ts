@@ -1,85 +1,106 @@
-import { assistantQA } from '../content/assistant-qa';
+import { SITE, projects, papers, skillGroups } from '../content/site';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-// Local static fuzzy matching logic as fallback
-function localQueryAssistant(query: string): string {
-  const cleanQuery = query
-    .toLowerCase()
-    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, ' ')
-    .trim();
-
-  if (!cleanQuery) {
-    return 'WARNING: EMPTY_QUERY_PACKET. Please input search arguments.';
-  }
-
-  const queryWords = cleanQuery.split(/\s+/);
-  let bestMatchIndex = -1;
-  let highestScore = 0;
-
-  assistantQA.forEach((entry, idx) => {
-    let score = 0;
-    entry.keywords.forEach((keyword) => {
-      if (queryWords.includes(keyword)) {
-        score += 2;
-      } else if (queryWords.some(word => word.includes(keyword) || keyword.includes(word))) {
-        score += 1;
-      }
-    });
-
-    if (score > highestScore) {
-      highestScore = score;
-      bestMatchIndex = idx;
-    }
-  });
-
-  if (highestScore > 0 && bestMatchIndex !== -1) {
-    return assistantQA[bestMatchIndex].answer;
-  }
-
-  return (
-    'CORE_INDEX_NOTICE: QUERY PARAMETERS RETURNED ZERO DIRECT CORRELATIONS.\n\n' +
-    'I could not retrieve matching context. Try asking one of the following:\n' +
-    '  • "What is his strongest project?"\n' +
-    '  • "Does he know FastAPI and backend Python?"\n' +
-    '  • "What are his research publications at VDAL?"\n' +
-    '  • "Does he have experience with PyTorch and deep learning?"\n' +
-    '  • "Tell me about Arik\'s bio background."'
-  );
+interface QAEntry {
+  keywords: string[];
+  answer: string;
 }
 
-/**
- * Queries the live RAG backend for an answer to the given question.
- * Falls back to local static indexing if backend is unconfigured or unreachable.
- */
-export async function queryAssistant(query: string): Promise<string> {
-  const cleanQuery = query.trim();
+const FALLBACK_ANSWER =
+  "I don't have that information. Try asking about a specific project, paper, or skill.";
 
-  if (!cleanQuery) {
-    return 'WARNING: EMPTY_QUERY_PACKET. Please input search arguments.';
+const STOPWORDS = new Set([
+  'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'am',
+  'of', 'in', 'on', 'at', 'to', 'for', 'and', 'or', 'but', 'with',
+  'what', 'how', 'when', 'where', 'why', 'who', 'which', 'do', 'does',
+  'did', 'can', 'could', 'will', 'would', 'should', 'his', 'her', 'he',
+  'she', 'it', 'this', 'that', 'you', 'your', 'i', 'me', 'my',
+]);
+
+function tokenize(text: string): string[] {
+  return text
+    .toLowerCase()
+    .replace(/[.,/#!$%^&*;:{}=\-_`~()?]/g, ' ')
+    .split(/\s+/)
+    .filter((word) => word.length > 0 && !STOPWORDS.has(word));
+}
+
+function buildEntries(): QAEntry[] {
+  const entries: QAEntry[] = [];
+
+  entries.push({
+    keywords: ['bio', 'about', 'who', 'background', 'summary', 'introduction'],
+    answer: `${SITE.name} — ${SITE.title}. ${SITE.summary}`,
+  });
+
+  for (const project of projects) {
+    entries.push({
+      keywords: [
+        ...tokenize(project.title),
+        ...tokenize(project.role),
+        ...project.tags.flatMap(tokenize),
+        'project',
+      ],
+      answer: `${project.title} (${project.role}): ${project.after}`,
+    });
   }
 
-  // Attempt live query if BACKEND_URL is set
-  if (BACKEND_URL) {
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/v1/assistant/query`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: cleanQuery }),
-      });
+  for (const paper of papers) {
+    entries.push({
+      keywords: [...tokenize(paper.title), ...tokenize(paper.venue), 'research', 'paper', 'publication'],
+      answer: `${paper.title} — ${paper.venue}, ${paper.date}. ${paper.keyFindings[0] ?? paper.abstract}`,
+    });
+  }
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.answer) {
-          return data.answer;
-        }
+  for (const group of skillGroups) {
+    entries.push({
+      keywords: [...tokenize(group.title), ...group.items.flatMap((item) => tokenize(item.name)), 'skill', 'skills'],
+      answer: `${group.title}: ${group.items.map((item) => item.name).join(', ')}.`,
+    });
+  }
+
+  entries.push({
+    keywords: ['contact', 'email', 'reach', 'hire', 'github', 'researchgate'],
+    answer: `You can reach ${SITE.name} at ${SITE.email} or on GitHub at ${SITE.github}.`,
+  });
+
+  return entries;
+}
+
+const entries = buildEntries();
+
+/**
+ * Pure client-side search over site.ts — no network call, so the assistant
+ * can never say something the page itself doesn't already say.
+ */
+export function queryAssistant(query: string): string {
+  const cleanQuery = query.trim();
+  if (!cleanQuery) return 'Please type a question.';
+
+  const queryWords = tokenize(cleanQuery);
+  if (queryWords.length === 0) return FALLBACK_ANSWER;
+
+  let bestScore = 0;
+  let bestAnswer = '';
+
+  for (const entry of entries) {
+    let score = 0;
+    for (const keyword of entry.keywords) {
+      if (queryWords.includes(keyword)) {
+        score += 2;
+      } else if (
+        queryWords.some((word) => word.length >= 4 && keyword.length >= 4 && (word.includes(keyword) || keyword.includes(word)))
+      ) {
+        score += 1;
       }
-    } catch (error) {
-      console.warn("Backend RAG service unreachable. Falling back to local index.", error);
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestAnswer = entry.answer;
     }
   }
 
-  // Fallback to local static fuzzy matching
-  await new Promise((resolve) => setTimeout(resolve, 150));
-  return localQueryAssistant(cleanQuery);
+  // Require at least one confident (exact-keyword) signal, not just a
+  // single weak fuzzy overlap — otherwise unrelated questions can still
+  // match by coincidence (e.g. "the" fuzzy-matching inside "thesis").
+  return bestScore >= 2 ? bestAnswer : FALLBACK_ANSWER;
 }

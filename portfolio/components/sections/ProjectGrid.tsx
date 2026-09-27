@@ -1,100 +1,106 @@
-'use client';
-
-import React, { useState } from 'react';
-import { projects } from '../../content/projects';
+import Link from 'next/link';
+import { ArrowUpRight, ExternalLink } from 'lucide-react';
+import { SiGithub } from 'react-icons/si';
+import { projects } from '../../content/site';
 import ProjectCard from './ProjectCard';
-import { Database, Network, ArrowDownCircle } from 'lucide-react';
-
-type FilterCategory = 'ALL' | 'APPLIED_DL' | 'FULL_STACK_SAAS';
+import { FadeIn } from '../ui/FadeIn';
 
 export default function ProjectGrid() {
-  const [activeFilter, setActiveFilter] = useState<FilterCategory>('ALL');
-
-  // Categorize projects based on tags
-  const filteredProjects = projects.filter((project) => {
-    if (activeFilter === 'ALL') return true;
-    
-    const dlTags = ['PyTorch', 'Siamese Networks', 'YOLOv8', 'DenseNet', 'Computer Vision', 'Explainable AI', 'Recommendation Engine'];
-    const saasTags = ['React', 'FastAPI', 'Next.js', 'React Native', 'PostgreSQL', 'Docker', 'Svelte', 'SQLAlchemy'];
-
-    if (activeFilter === 'APPLIED_DL') {
-      return project.tags.some(tag => dlTags.includes(tag));
-    }
-    if (activeFilter === 'FULL_STACK_SAAS') {
-      return project.tags.some(tag => saasTags.includes(tag));
-    }
-    return true;
-  });
+  const featured = projects.filter((p) => p.featured);
+  const rest = projects.filter((p) => !p.featured);
 
   return (
-    <section id="projects" className="w-full py-16 border-b border-slate-grid/10 scroll-mt-10">
-      <div className="max-w-6xl mx-auto px-4">
-        
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div>
-            <span className="font-mono text-[9px] text-slate-grid block mb-1">
-              // ARCHIVE_01
-            </span>
-            <h2 className="font-display font-bold text-2xl md:text-3xl text-fog uppercase tracking-tight">
-              Selected Systems & Research
-            </h2>
-          </div>
+    <section id="projects" className="w-full py-16 scroll-mt-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <FadeIn>
+          <h2 className="font-display font-bold text-2xl sm:text-3xl text-fog">Selected projects</h2>
+        </FadeIn>
 
-          {/* Filtering Toggles */}
-          <div className="flex flex-wrap gap-2 font-mono text-[10px]">
-            <button
-              onClick={() => setActiveFilter('ALL')}
-              className={`px-3 py-1 border rounded transition-colors duration-200 flex items-center gap-1.5
-                ${activeFilter === 'ALL'
-                  ? 'border-signal-amber text-signal-amber bg-signal-amber/5'
-                  : 'border-slate-grid/20 text-slate-grid hover:border-slate-grid/50 hover:text-fog'
-                }
-              `}
-            >
-              [ALL_ARCHIVES]
-            </button>
-            <button
-              onClick={() => setActiveFilter('APPLIED_DL')}
-              className={`px-3 py-1 border rounded transition-colors duration-200 flex items-center gap-1.5
-                ${activeFilter === 'APPLIED_DL'
-                  ? 'border-signal-amber text-signal-amber bg-signal-amber/5'
-                  : 'border-slate-grid/20 text-slate-grid hover:border-slate-grid/50 hover:text-fog'
-                }
-              `}
-            >
-              <Network className="w-3 h-3" />
-              [APPLIED_DL]
-            </button>
-            <button
-              onClick={() => setActiveFilter('FULL_STACK_SAAS')}
-              className={`px-3 py-1 border rounded transition-colors duration-200 flex items-center gap-1.5
-                ${activeFilter === 'FULL_STACK_SAAS'
-                  ? 'border-signal-amber text-signal-amber bg-signal-amber/5'
-                  : 'border-slate-grid/20 text-slate-grid hover:border-slate-grid/50 hover:text-fog'
-                }
-              `}
-            >
-              <Database className="w-3 h-3" />
-              [FULL_STACK_SAAS]
-            </button>
-          </div>
-        </div>
-
-        {/* Project Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.map((project) => (
-            <ProjectCard key={project.slug} project={project} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-8">
+          {featured.map((project, idx) => (
+            <FadeIn key={project.slug} delay={idx * 0.05}>
+              <ProjectCard project={project} />
+            </FadeIn>
           ))}
         </div>
 
-        {/* Empty state if nothing matches */}
-        {filteredProjects.length === 0 && (
-          <div className="w-full border border-dashed border-slate-grid/30 rounded p-12 text-center font-mono text-xs text-slate-grid">
-            NO_COMMITS_FOUND_FOR_FILTER_STATE
+        {rest.length > 0 && (
+          <div className="mt-16">
+            <FadeIn>
+              <h3 className="text-sm font-semibold text-slate-grid uppercase tracking-wide">More projects</h3>
+            </FadeIn>
+            <div className="mt-6 divide-y divide-slate-grid/12 border-y border-slate-grid/12">
+              {rest.map((project, idx) => (
+                <FadeIn key={project.slug} delay={idx * 0.03}>
+                  <div className="py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-6">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Link
+                          href={`/projects/${project.slug}`}
+                          className="font-display font-semibold text-fog hover:text-signal-amber transition-colors text-base"
+                        >
+                          {project.title}
+                        </Link>
+                        <span className="text-slate-grid/40 hidden sm:inline" aria-hidden="true">•</span>
+                        <span className="text-xs text-slate-grid">{project.role}</span>
+                      </div>
+                      <p className="text-sm text-slate-grid truncate mt-1">
+                        {project.description}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 flex-shrink-0">
+                      <div className="flex flex-wrap gap-1.5 items-center">
+                        {project.tags.slice(0, 3).map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-xs text-slate-grid border border-slate-grid/15 rounded px-2 py-0.5 whitespace-nowrap"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <Link
+                          href={`/projects/${project.slug}`}
+                          className="inline-flex items-center gap-1 text-sm text-signal-amber hover:text-signal-amber/80 font-medium transition-colors whitespace-nowrap"
+                        >
+                          Case study
+                          <ArrowUpRight className="w-3.5 h-3.5" />
+                        </Link>
+
+                        {project.repoUrl && (
+                          <a
+                            href={project.repoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`${project.title} repository`}
+                            className="text-slate-grid hover:text-fog transition-colors p-1"
+                          >
+                            <SiGithub className="w-4 h-4" />
+                          </a>
+                        )}
+
+                        {project.demoUrl && (
+                          <a
+                            href={project.demoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`${project.title} demo`}
+                            className="text-slate-grid hover:text-fog transition-colors p-1"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
           </div>
         )}
-
       </div>
     </section>
   );

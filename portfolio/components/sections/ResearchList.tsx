@@ -1,103 +1,103 @@
-'use client';
+import { Fragment } from 'react';
+import { papers, PaperStatus, SITE } from '../../content/site';
+import { ExternalLink } from 'lucide-react';
+import { SiGithub, SiResearchgate } from 'react-icons/si';
+import { FadeIn } from '../ui/FadeIn';
 
-import React from 'react';
-import { researchPapers } from '../../content/research';
-import { BookOpen, FileText, ArrowRight, ExternalLink } from 'lucide-react';
+const STATUS_LABEL: Record<PaperStatus, string> = {
+  preprint: 'Preprint',
+  submitted: 'Submitted',
+  'under-review': 'Under review',
+  accepted: 'Accepted',
+  published: 'Published',
+};
 
-export default function ResearchList() {
+interface ResearchListProps {
+  compact?: boolean;
+  showHeader?: boolean;
+}
+
+export default function ResearchList({ compact = false, showHeader = true }: ResearchListProps) {
   return (
-    <section id="research" className="w-full py-16 border-b border-slate-grid/10">
-      <div className="max-w-6xl mx-auto px-4">
-        
-        {/* Section Header */}
-        <div className="mb-12">
-          <span className="font-mono text-[9px] text-slate-grid block mb-1">
-            // ARCHIVE_02
-          </span>
-          <h2 className="font-display font-bold text-2xl md:text-3xl text-fog uppercase tracking-tight">
-            Research Publications & Preprints
-          </h2>
-          <p className="text-slate-grid text-xs mt-1 max-w-xl font-mono">
-            Applied deep learning research projects targeted at clinical medical systems and dual-temporal remote sensing environments.
-          </p>
-        </div>
+    <section id="research" className="w-full py-16 scroll-mt-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        {showHeader && (
+          <FadeIn>
+            <h2 className="font-display font-bold text-2xl sm:text-3xl text-fog">Research</h2>
+          </FadeIn>
+        )}
 
-        {/* Papers Listing */}
-        <div className="flex flex-col gap-10">
-          {researchPapers.map((paper, idx) => (
-            <div 
-              key={paper.slug}
-              className="relative border border-slate-grid/25 rounded bg-slate-grid/5 p-6 md:p-8 font-mono grid grid-cols-1 lg:grid-cols-12 gap-6"
-            >
-              {/* Left Column: Index, Date & Venue details */}
-              <div className="lg:col-span-3 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-grid/20 pb-4 lg:pb-0 lg:pr-6">
-                <div>
-                  <div className="text-[10px] text-slate-grid/50 uppercase tracking-widest font-bold">
-                    INDEX_ID // 0{idx + 1}
-                  </div>
-                  <div className="text-signal-amber font-bold text-sm mt-1">
-                    {paper.date}
-                  </div>
+        <div className={`flex flex-col gap-5 ${showHeader ? 'mt-8' : 'mt-0'}`}>
+          {papers.map((paper, idx) => (
+            <FadeIn key={paper.slug} delay={idx * 0.05}>
+              <div
+                className={`rounded-lg border p-6 ${
+                  idx === 0 ? 'border-signal-amber/30 bg-signal-amber/[0.03]' : 'border-slate-grid/12 bg-slate-grid/[0.02]'
+                }`}
+              >
+                <div className="flex flex-wrap items-center gap-3 text-sm text-slate-grid">
+                  {[paper.date, paper.venue].filter(Boolean).map((part, i) => (
+                    <Fragment key={i}>
+                      {i > 0 && <span className="text-slate-grid/40">•</span>}
+                      <span>{part}</span>
+                    </Fragment>
+                  ))}
+                  {paper.status && (
+                    <span className="text-xs font-medium text-signal-amber border border-signal-amber/30 rounded-full px-2 py-0.5">
+                      {STATUS_LABEL[paper.status]}
+                    </span>
+                  )}
                 </div>
-                <div className="mt-4 lg:mt-0 text-[10px] text-slate-grid leading-normal">
-                  <span className="text-[9px] text-slate-grid/60 block">// VENUE</span>
-                  <span className="text-fog font-medium">{paper.venue}</span>
-                </div>
-              </div>
 
-              {/* Right Column: Title, Authors, Abstract & Findings */}
-              <div className="lg:col-span-9 flex flex-col justify-between">
-                <div>
-                  {/* Title */}
-                  <h3 className="font-display font-bold text-base md:text-lg text-fog leading-snug uppercase">
-                    {paper.title}
-                  </h3>
+                <h3 className={`font-display font-semibold text-fog mt-2 ${idx === 0 ? 'text-xl' : 'text-lg'}`}>
+                  {paper.title}
+                </h3>
 
-                  {/* Authors */}
-                  <div className="text-[10px] text-slate-grid mt-2 flex flex-wrap gap-x-2 gap-y-1 items-center">
-                    <span className="text-slate-grid/50">// AUTHORS:</span>
-                    {paper.authors.map((author, index) => (
-                      <span key={author} className="flex items-center">
-                        <span className={author.includes('Hossain') ? 'text-signal-amber font-bold' : 'text-slate-grid'}>
-                          {author}
-                        </span>
-                        {index < paper.authors.length - 1 && <span className="text-slate-grid/40 ml-1">,</span>}
-                      </span>
+                <p className="text-sm text-slate-grid mt-1">
+                  {paper.authors.map((author, i) => (
+                    <Fragment key={author}>
+                      {i > 0 && ', '}
+                      <span className={author === SITE.citationName ? 'text-fog font-medium' : undefined}>{author}</span>
+                    </Fragment>
+                  ))}
+                </p>
+
+                {paper.metrics && paper.metrics.length > 0 && (
+                  <div className="flex flex-wrap gap-3 mt-3">
+                    {paper.metrics.map((metric) => (
+                      <div key={metric.label} className="border border-slate-grid/12 rounded-md px-3 py-1.5">
+                        <div className="text-xs text-slate-grid">{metric.label}</div>
+                        <div className="text-sm sm:text-base font-semibold text-fog">{metric.value}</div>
+                      </div>
                     ))}
                   </div>
+                )}
 
-                  {/* Abstract */}
-                  <div className="mt-5 text-xs text-slate-grid hover:text-fog/90 transition-colors duration-200 leading-relaxed">
-                    <span className="text-[9px] text-slate-grid/50 block font-bold mb-1">// ABSTRACT_INDEX</span>
-                    {paper.abstract}
-                  </div>
+                <p className={`text-sm text-fog/90 leading-relaxed mt-4 ${compact ? 'line-clamp-2' : ''}`}>
+                  {paper.abstract}
+                </p>
 
-                  {/* Key Findings */}
-                  <div className="mt-5">
-                    <span className="text-[9px] text-slate-grid/50 block font-bold mb-2">// KEY_RESEARCH_METRICS</span>
-                    <ul className="text-xs text-slate-grid leading-relaxed flex flex-col gap-2.5 pl-4 list-none">
-                      {paper.keyFindings.map((finding, index) => (
-                        <li key={index} className="relative flex items-start gap-2">
-                          <span className="text-signal-amber text-[10px] select-none mt-0.5 font-bold">»</span>
-                          <span>{finding}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+                {!compact && paper.keyFindings.length > 0 && (
+                  <ul className="mt-4 flex flex-col gap-1.5 text-sm text-slate-grid">
+                    {paper.keyFindings.map((finding, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="text-signal-amber mt-1.5 block w-1 h-1 rounded-full bg-signal-amber flex-shrink-0" />
+                        <span>{finding}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
 
-                {/* Footer Action Links */}
-                <div className="border-t border-slate-grid/20 pt-5 mt-6 flex flex-wrap gap-4 items-center">
+                <div className="mt-5 flex flex-wrap gap-4">
                   {paper.researchGateUrl && (
                     <a
                       href={paper.researchGateUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[10px] text-slate-grid hover:text-signal-amber border border-slate-grid/20 hover:border-signal-amber/60 rounded px-2.5 py-1 bg-basalt transition-all duration-200 flex items-center gap-1.5"
+                      className="flex items-center gap-1.5 text-sm text-signal-amber hover:text-signal-amber/80 transition-colors"
                     >
-                      <BookOpen className="w-3.5 h-3.5" />
-                      <span>[ResearchGate_Profile]</span>
-                      <ExternalLink className="w-2.5 h-2.5 text-slate-grid/50" />
+                      <SiResearchgate className="w-4 h-4" />
+                      ResearchGate profile
                     </a>
                   )}
                   {paper.paperUrl && (
@@ -105,19 +105,28 @@ export default function ResearchList() {
                       href={paper.paperUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[10px] text-slate-grid hover:text-signal-amber border border-slate-grid/20 hover:border-signal-amber/60 rounded px-2.5 py-1 bg-basalt transition-all duration-200 flex items-center gap-1.5"
+                      className="flex items-center gap-1.5 text-sm text-signal-amber hover:text-signal-amber/80 transition-colors"
                     >
-                      <FileText className="w-3.5 h-3.5" />
-                      <span>[View_Full_Text]</span>
-                      <ExternalLink className="w-2.5 h-2.5 text-slate-grid/50" />
+                      <ExternalLink className="w-4 h-4" />
+                      Paper (DOI)
+                    </a>
+                  )}
+                  {paper.codeUrl && (
+                    <a
+                      href={paper.codeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-sm text-signal-amber hover:text-signal-amber/80 transition-colors"
+                    >
+                      <SiGithub className="w-4 h-4" />
+                      Code
                     </a>
                   )}
                 </div>
               </div>
-            </div>
+            </FadeIn>
           ))}
         </div>
-
       </div>
     </section>
   );
