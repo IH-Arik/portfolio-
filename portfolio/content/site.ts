@@ -50,7 +50,7 @@ export const SITE = {
   title: 'AI/ML Engineer & Researcher',
   summary:
     'I build deep learning systems for medical imaging and satellite change detection, and ship them as full-stack applications (FastAPI, Next.js, React Native). Researcher at the Visual Data Analysis Lab (VDAL).',
-  email: 'ittesham02@gmail.com',
+  email: 'ittesafarik@gmail.com',
   github: 'https://github.com/IH-Arik',
   linkedin: 'https://www.linkedin.com/in/md-ittesaf-hossain-b4671b247/',
   researchgate: 'https://researchgate.net/profile/Md-Hossain-1936',
